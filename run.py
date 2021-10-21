@@ -45,7 +45,9 @@ def main():
     pygame.font.init()
     screen = pygame.display.set_mode(size)
 
+    active_game = False
     game_over = False
+    text = pygame.font.SysFont('arial', 36).render('Game Over', True, (255, 255, 255))
 
     sprites = pygame.sprite.Group()
 
@@ -58,30 +60,40 @@ def main():
     sprites.add(platform)
 
 
-    while not game_over:
+    while not active_game:
 
-        clock.tick(FPS)
+        while not game_over:
 
-        # Events
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+
+            clock.tick(FPS)
+
+            # Events
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    active_game = True
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_a:
+                        platform.vx = -5
+                    elif event.key == pygame.K_d:
+                        platform.vx = 5
+                elif event.type == pygame.KEYUP:
+                    if event.key == pygame.K_a or event.key == pygame.K_d:
+                        platform.vx = 0
+            # Logic
+            sprites.update()
+            if pygame.sprite.collide_rect(ball, platform):
+                ball.vy *= -1
+            if (ball.rect.y + ball.rect.height >= height):
                 game_over = True
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_a:
-                    platform.vx = -5
-                elif event.key == pygame.K_d:
-                    platform.vx = 5
-            elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_a or event.key == pygame.K_d:
-                    platform.vx = 0
-        # Logic
-        sprites.update()
-        if pygame.sprite.collide_rect(ball, platform):
-            ball.vy *= -1
-        # Draw
+            # Draw
+            screen.fill(black) 
+            sprites.draw(screen)
+            # Draw flip and wait
+            pygame.display.flip()
+        for sprite in sprites:
+            sprite.kill()
         screen.fill(black) 
-        sprites.draw(screen)
-        # Draw flip and wait
+        screen.blit(text, (width//2 - 100, height//2 - 30))
         pygame.display.flip()
 
     sys.exit()
