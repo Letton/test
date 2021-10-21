@@ -34,10 +34,11 @@ class Platform(pygame.sprite.Sprite):
         self.rect.x = width // 2 - self.rect.width // 2
         self.rect.y = height - 50
         self.vx = 0
+        self.shift_x = 0
 
     def update(self):
         if (self.rect.x + self.vx >= 0 and self.rect.x + self.rect.width + self.vx <= width):
-            self.rect.x += self.vx
+            self.rect.x += self.vx + self.shift_x
 
 
 def main():
@@ -73,18 +74,29 @@ def main():
                     active_game = True
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_a:
+                        platform.shift_x = 0
                         platform.vx = -5
                     elif event.key == pygame.K_d:
+                        platform.shift_x = 0
                         platform.vx = 5
                 elif event.type == pygame.KEYUP:
-                    if event.key == pygame.K_a or event.key == pygame.K_d:
+                    if event.key == pygame.K_a:
                         platform.vx = 0
+                        platform.shift_x = -3
+                    if event.key == pygame.K_d:
+                        platform.vx = 0
+                        platform.shift_x = 3
+                    
             # Logic
             sprites.update()
             if pygame.sprite.collide_rect(ball, platform):
                 ball.vy *= -1
             if (ball.rect.y + ball.rect.height >= height):
                 game_over = True
+            if platform.shift_x > 0:
+                platform.shift_x -= 0.01
+            if platform.shift_x < 0:
+                platform.shift_x += 0.01
             # Draw
             screen.fill(black) 
             sprites.draw(screen)
