@@ -62,6 +62,10 @@ def main():
 
 
     while not active_game:
+        
+        for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    active_game = True
 
         while not game_over:
 
